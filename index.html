@@ -1,1 +1,268 @@
-<!DOCTYPE html><html lang='en'><head><meta charset='UTF-8'><meta name='viewport' content='width=device-width,initial-scale=1'><title>Nasdaq Dashboard Pro</title><style>body{margin:0;font-family:Inter,Arial;background:#0b1020;color:#e5e7eb;padding:24px}.wrap{max-width:980px;margin:auto}.top{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}.title{font-size:32px;font-weight:700}.sub{color:#94a3b8}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-top:24px}.card{background:linear-gradient(180deg,#111827,#0f172a);border:1px solid #1f2937;border-radius:18px;padding:18px;box-shadow:0 10px 30px rgba(0,0,0,.25)}.label{color:#94a3b8;font-size:13px}.val{font-size:34px;font-weight:700;margin-top:8px}.good{color:#22c55e}.mid{color:#f59e0b}.bad{color:#ef4444}.table{margin-top:24px;background:#111827;border-radius:18px;overflow:hidden;border:1px solid #1f2937}table{width:100%;border-collapse:collapse}th,td{padding:14px;border-bottom:1px solid #1f2937;text-align:left}th{background:#0f172a;color:#94a3b8}.footer{margin-top:18px;color:#94a3b8;font-size:12px}</style></head><body><div class='wrap'><div class='top'><div><div class='title'>Nasdaq Dashboard Pro</div><div class='sub'>Auto-updating market breadth monitor</div></div><div class='sub'>Last update: <span id='ts'>-</span></div></div><div class='grid'><div class='card'><div class='label'>NDFD</div><div id='ndfd' class='val'>-</div></div><div class='card'><div class='label'>Net 52W High-Low</div><div id='net' class='val'>-</div></div><div class='card'><div class='label'>Up/Down Volume</div><div id='ud' class='val'>-</div></div><div class='card'><div class='label'>QQQ ATR x50SMA</div><div id='atr' class='val'>4.71</div></div></div><div class='table'><table><thead><tr><th>Metric</th><th>Status</th><th>Meaning</th></tr></thead><tbody><tr><td>NDFD</td><td id='s1'>-</td><td>Nasdaq-100 above 5DMA</td></tr><tr><td>Net High-Low</td><td id='s2'>-</td><td>New highs minus lows</td></tr><tr><td>Up/Down Volume</td><td id='s3'>-</td><td>Advancing vs declining volume</td></tr><tr><td>ATR Multiple</td><td id='s4'>Risk</td><td>QQQ extension from 50SMA</td></tr></tbody></table></div><div class='footer'>Hosted on GitHub Pages</div></div><script>function setTxt(id,v,c){let e=document.getElementById(id);e.textContent=v;e.className='val '+c}function cls(v,t){if(t==1)return v>=70?'good':v>=50?'mid':'bad';if(t==2)return v>10?'good':v>=0?'mid':'bad';if(t==3)return v>1.2?'good':v>=0.9?'mid':'bad';return v<3?'good':v<4.5?'mid':'bad'}function word(c){return c=='good'?'Bullish':c=='mid'?'Neutral':'Risk'}fetch('breadth.json?'+Date.now()).then(r=>r.json()).then(d=>{document.getElementById('ts').textContent=new Date().toLocaleString();let c1=cls(d.ndfd,1),c2=cls(d.net,2),c3=cls(d.ud,3),c4=cls(4.71,4);setTxt('ndfd',d.ndfd,c1);setTxt('net',d.net,c2);setTxt('ud',d.ud,c3);document.getElementById('atr').className='val '+c4;document.getElementById('s1').textContent=word(c1);document.getElementById('s2').textContent=word(c2);document.getElementById('s3').textContent=word(c3);document.getElementById('s4').textContent=word(c4);});</script></body></html>
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Nasdaq Dashboard Pro</title>
+
+<style>
+body{
+    margin:0;
+    padding:24px;
+    background:#0b1020;
+    color:#e5e7eb;
+    font-family:Arial, Helvetica, sans-serif;
+}
+.wrap{
+    max-width:1100px;
+    margin:auto;
+}
+.top{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:20px;
+    flex-wrap:wrap;
+}
+.title{
+    font-size:32px;
+    font-weight:700;
+}
+.sub{
+    color:#94a3b8;
+    font-size:14px;
+}
+.grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(210px,1fr));
+    gap:16px;
+    margin-top:24px;
+}
+.card{
+    background:#111827;
+    border:1px solid #1f2937;
+    border-radius:18px;
+    padding:18px;
+}
+.label{
+    font-size:13px;
+    color:#94a3b8;
+}
+.val{
+    font-size:30px;
+    font-weight:700;
+    margin-top:10px;
+}
+.good{color:#22c55e;}
+.mid{color:#f59e0b;}
+.bad{color:#ef4444;}
+
+.tablebox{
+    margin-top:26px;
+    background:#111827;
+    border-radius:18px;
+    overflow:hidden;
+    border:1px solid #1f2937;
+}
+table{
+    width:100%;
+    border-collapse:collapse;
+}
+th,td{
+    padding:14px;
+    border-bottom:1px solid #1f2937;
+    text-align:left;
+}
+th{
+    background:#0f172a;
+    color:#94a3b8;
+}
+.footer{
+    margin-top:18px;
+    color:#94a3b8;
+    font-size:12px;
+}
+</style>
+</head>
+
+<body>
+<div class="wrap">
+
+<div class="top">
+    <div>
+        <div class="title">Nasdaq Dashboard Pro</div>
+        <div class="sub">Auto-updating market breadth monitor</div>
+    </div>
+    <div class="sub">Last Update: <span id="ts">-</span></div>
+</div>
+
+<!-- Tiles -->
+<div class="grid">
+
+    <div class="card">
+        <div class="label">EMA Stack</div>
+        <div id="ema" class="val">-</div>
+    </div>
+
+    <div class="card">
+        <div class="label">NDFD</div>
+        <div id="ndfd" class="val">-</div>
+    </div>
+
+    <div class="card">
+        <div class="label">Net 52W High-Low</div>
+        <div id="net" class="val">-</div>
+    </div>
+
+    <div class="card">
+        <div class="label">Up/Down Volume</div>
+        <div id="ud" class="val">-</div>
+    </div>
+
+    <div class="card">
+        <div class="label">QQQ ATR x50SMA</div>
+        <div id="atr" class="val">4.71</div>
+    </div>
+
+</div>
+
+<!-- Summary Table -->
+<div class="tablebox">
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Status</th>
+<th>Meaning</th>
+</tr>
+</thead>
+
+<tbody>
+
+<tr>
+<td>EMA Stack</td>
+<td id="s0">-</td>
+<td>QQQ vs 9EMA vs 21EMA</td>
+</tr>
+
+<tr>
+<td>NDFD</td>
+<td id="s1">-</td>
+<td>Nasdaq-100 above 5DMA</td>
+</tr>
+
+<tr>
+<td>Net High-Low</td>
+<td id="s2">-</td>
+<td>New highs minus lows</td>
+</tr>
+
+<tr>
+<td>Up/Down Volume</td>
+<td id="s3">-</td>
+<td>Advancing vs declining volume</td>
+</tr>
+
+<tr>
+<td>ATR Multiple</td>
+<td id="s4">Risk</td>
+<td>QQQ extension from 50SMA</td>
+</tr>
+
+</tbody>
+</table>
+</div>
+
+<div class="footer">
+Hosted on GitHub Pages
+</div>
+
+</div>
+
+<script>
+function setColor(id, text, cls){
+    let el = document.getElementById(id);
+    el.textContent = text;
+    el.className = "val " + cls;
+}
+
+function level(v,type){
+    if(type==="ndfd"){
+        if(v>=70) return "good";
+        if(v>=50) return "mid";
+        return "bad";
+    }
+
+    if(type==="net"){
+        if(v>10) return "good";
+        if(v>=0) return "mid";
+        return "bad";
+    }
+
+    if(type==="ud"){
+        if(v>1.2) return "good";
+        if(v>=0.9) return "mid";
+        return "bad";
+    }
+
+    if(type==="atr"){
+        if(v<3) return "good";
+        if(v<4.5) return "mid";
+        return "bad";
+    }
+}
+
+function word(c){
+    if(c==="good") return "Bullish";
+    if(c==="mid") return "Neutral";
+    return "Risk";
+}
+
+fetch("breadth.json?" + Date.now())
+.then(r => r.json())
+.then(d => {
+
+    document.getElementById("ts").textContent =
+        new Date().toLocaleString();
+
+    // EMA Stack
+    document.getElementById("ema").textContent = d.ema_stack;
+    if(d.ema_stack.includes("Bullish")){
+        document.getElementById("ema").className = "val good";
+        document.getElementById("s0").textContent = "Bullish";
+    } else if(d.ema_stack.includes("Bearish")){
+        document.getElementById("ema").className = "val bad";
+        document.getElementById("s0").textContent = "Risk";
+    } else {
+        document.getElementById("ema").className = "val mid";
+        document.getElementById("s0").textContent = "Neutral";
+    }
+
+    // NDFD
+    let c1 = level(d.ndfd,"ndfd");
+    setColor("ndfd", d.ndfd, c1);
+    document.getElementById("s1").textContent = word(c1);
+
+    // Net High-Low
+    let c2 = level(d.net,"net");
+    setColor("net", d.net, c2);
+    document.getElementById("s2").textContent = word(c2);
+
+    // Up/Down Volume
+    let c3 = level(d.ud,"ud");
+    setColor("ud", d.ud, c3);
+    document.getElementById("s3").textContent = word(c3);
+
+    // ATR
+    let atr = 4.71;
+    let c4 = level(atr,"atr");
+    setColor("atr", atr, c4);
+    document.getElementById("s4").textContent = word(c4);
+
+});
+</script>
+
+</body>
+</html>
+```
