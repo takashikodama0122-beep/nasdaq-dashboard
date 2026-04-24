@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -15,15 +14,15 @@ body{
     font-family:Arial, Helvetica, sans-serif;
 }
 .wrap{
-    max-width:1100px;
+    max-width:1450px;
     margin:auto;
 }
 .top{
     display:flex;
     justify-content:space-between;
     align-items:center;
-    gap:20px;
     flex-wrap:wrap;
+    gap:20px;
 }
 .title{
     font-size:32px;
@@ -33,45 +32,55 @@ body{
     color:#94a3b8;
     font-size:14px;
 }
+
 .grid{
     display:grid;
     grid-template-columns:repeat(5,1fr);
     gap:10px;
     margin-top:22px;
 }
+
 .card{
     background:#111827;
     border:1px solid #243041;
     border-radius:8px;
     padding:14px 16px;
-    min-height:108px;
+    min-height:118px;
     display:flex;
     flex-direction:column;
     justify-content:space-between;
 }
+
 .label{
     font-size:12px;
     color:#7c8aa0;
     text-transform:uppercase;
-    letter-spacing:0.7px;
+    letter-spacing:.7px;
     font-weight:600;
 }
+
 .val{
     font-size:28px;
     font-weight:700;
     line-height:1.1;
-    margin-top:8px;
 }
+
+.delta{
+    font-size:13px;
+    margin-top:6px;
+}
+
 .good{color:#22c55e;}
 .mid{color:#f59e0b;}
 .bad{color:#ef4444;}
+.flat{color:#94a3b8;}
 
 .tablebox{
     margin-top:26px;
     background:#111827;
-    border-radius:18px;
+    border-radius:12px;
     overflow:hidden;
-    border:1px solid #1f2937;
+    border:1px solid #243041;
 }
 table{
     width:100%;
@@ -79,7 +88,7 @@ table{
 }
 th,td{
     padding:14px;
-    border-bottom:1px solid #1f2937;
+    border-bottom:1px solid #243041;
     text-align:left;
 }
 th{
@@ -98,44 +107,52 @@ th{
 <div class="wrap">
 
 <div class="top">
-    <div>
-        <div class="title">Nasdaq Dashboard Pro</div>
-        <div class="sub">Auto-updating market breadth monitor</div>
-    </div>
-    <div class="sub">Last Update: <span id="ts">-</span></div>
+<div>
+<div class="title">Nasdaq Dashboard Pro</div>
+<div class="sub">Daily Breadth / Trend / Risk Monitor</div>
 </div>
 
-<!-- Tiles -->
+<div class="sub">
+Last Update: <span id="ts">-</span>
+</div>
+</div>
+
+<!-- TOP TILES -->
 <div class="grid">
 
-    <div class="card">
-        <div class="label">EMA Stack</div>
-        <div id="ema" class="val">-</div>
-    </div>
+<div class="card">
+<div class="label">EMA STACK</div>
+<div id="ema" class="val">-</div>
+<div id="ema_delta" class="delta flat">→</div>
+</div>
 
-    <div class="card">
-        <div class="label">NDFD</div>
-        <div id="ndfd" class="val">-</div>
-    </div>
+<div class="card">
+<div class="label">NDFD</div>
+<div id="ndfd" class="val">-</div>
+<div id="ndfd_delta" class="delta flat">-</div>
+</div>
 
-    <div class="card">
-        <div class="label">Net 52W High-Low</div>
-        <div id="net" class="val">-</div>
-    </div>
+<div class="card">
+<div class="label">NET 52W H/L</div>
+<div id="net" class="val">-</div>
+<div id="net_delta" class="delta flat">-</div>
+</div>
 
-    <div class="card">
-        <div class="label">Up/Down Volume</div>
-        <div id="ud" class="val">-</div>
-    </div>
+<div class="card">
+<div class="label">UP/DOWN VOL</div>
+<div id="ud" class="val">-</div>
+<div id="ud_delta" class="delta flat">-</div>
+</div>
 
-    <div class="card">
-        <div class="label">QQQ ATR x50SMA</div>
-        <div id="atr" class="val">4.71</div>
-    </div>
+<div class="card">
+<div class="label">QQQ ATR x50SMA</div>
+<div id="atr" class="val">-</div>
+<div id="atr_delta" class="delta flat">-</div>
+</div>
 
 </div>
 
-<!-- Summary Table -->
+<!-- TABLE -->
 <div class="tablebox">
 <table>
 <thead>
@@ -147,37 +164,11 @@ th{
 </thead>
 
 <tbody>
-
-<tr>
-<td>EMA Stack</td>
-<td id="s0">-</td>
-<td>QQQ vs 9EMA vs 21EMA</td>
-</tr>
-
-<tr>
-<td>NDFD</td>
-<td id="s1">-</td>
-<td>Nasdaq-100 above 5DMA</td>
-</tr>
-
-<tr>
-<td>Net High-Low</td>
-<td id="s2">-</td>
-<td>New highs minus lows</td>
-</tr>
-
-<tr>
-<td>Up/Down Volume</td>
-<td id="s3">-</td>
-<td>Advancing vs declining volume</td>
-</tr>
-
-<tr>
-<td>ATR Multiple</td>
-<td id="s4">Risk</td>
-<td>QQQ extension from 50SMA</td>
-</tr>
-
+<tr><td>EMA Stack</td><td id="s0">-</td><td>QQQ vs 9EMA vs 21EMA</td></tr>
+<tr><td>NDFD</td><td id="s1">-</td><td>Nasdaq-100 above 5DMA</td></tr>
+<tr><td>Net High-Low</td><td id="s2">-</td><td>New highs minus lows</td></tr>
+<tr><td>Up/Down Volume</td><td id="s3">-</td><td>Advancing vs declining volume</td></tr>
+<tr><td>ATR Multiple</td><td id="s4">-</td><td>QQQ extension from 50SMA</td></tr>
 </tbody>
 </table>
 </div>
@@ -189,88 +180,97 @@ Hosted on GitHub Pages
 </div>
 
 <script>
-function setColor(id, text, cls){
+
+function deltaText(curr, prev, digits=2){
+    if(prev === undefined || prev === null) return ["→","flat"];
+
+    let diff = curr - prev;
+
+    if(diff > 0){
+        return ["▲ +" + diff.toFixed(digits), "good"];
+    }
+    if(diff < 0){
+        return ["▼ " + diff.toFixed(digits), "bad"];
+    }
+    return ["→ 0.00", "flat"];
+}
+
+function setDelta(id,curr,prev,d=2){
+    let out = deltaText(curr,prev,d);
     let el = document.getElementById(id);
-    el.textContent = text;
+    el.textContent = out[0];
+    el.className = "delta " + out[1];
+}
+
+function setVal(id,val,cls){
+    let el = document.getElementById(id);
+    el.textContent = val;
     el.className = "val " + cls;
 }
 
-function level(v,type){
-    if(type==="ndfd"){
-        if(v>=70) return "good";
-        if(v>=50) return "mid";
-        return "bad";
-    }
-
-    if(type==="net"){
-        if(v>10) return "good";
-        if(v>=0) return "mid";
-        return "bad";
-    }
-
-    if(type==="ud"){
-        if(v>1.2) return "good";
-        if(v>=0.9) return "mid";
-        return "bad";
-    }
-
-    if(type==="atr"){
-        if(v<3) return "good";
-        if(v<4.5) return "mid";
-        return "bad";
-    }
-}
-
-function word(c){
-    if(c==="good") return "Bullish";
-    if(c==="mid") return "Neutral";
+function statusWord(cls){
+    if(cls==="good") return "Bullish";
+    if(cls==="mid") return "Neutral";
     return "Risk";
 }
 
 fetch("breadth.json?" + Date.now())
-.then(r => r.json())
-.then(d => {
+.then(r=>r.json())
+.then(d=>{
 
-    document.getElementById("ts").textContent =
-        new Date().toLocaleString();
+document.getElementById("ts").textContent =
+new Date().toLocaleString();
 
-    // EMA Stack
-    document.getElementById("ema").textContent = d.ema_stack;
-    if(d.ema_stack.includes("Bullish")){
-        document.getElementById("ema").className = "val good";
-        document.getElementById("s0").textContent = "Bullish";
-    } else if(d.ema_stack.includes("Bearish")){
-        document.getElementById("ema").className = "val bad";
-        document.getElementById("s0").textContent = "Risk";
-    } else {
-        document.getElementById("ema").className = "val mid";
-        document.getElementById("s0").textContent = "Neutral";
-    }
 
-    // NDFD
-    let c1 = level(d.ndfd,"ndfd");
-    setColor("ndfd", d.ndfd, c1);
-    document.getElementById("s1").textContent = word(c1);
+// EMA
+document.getElementById("ema").textContent = d.ema_stack || "Mixed";
 
-    // Net High-Low
-    let c2 = level(d.net,"net");
-    setColor("net", d.net, c2);
-    document.getElementById("s2").textContent = word(c2);
+if((d.ema_stack || "").includes("Bullish")){
+    document.getElementById("ema").className="val good";
+    document.getElementById("s0").textContent="Bullish";
+}
+else if((d.ema_stack || "").includes("Bearish")){
+    document.getElementById("ema").className="val bad";
+    document.getElementById("s0").textContent="Risk";
+}
+else{
+    document.getElementById("ema").className="val mid";
+    document.getElementById("s0").textContent="Neutral";
+}
 
-    // Up/Down Volume
-    let c3 = level(d.ud,"ud");
-    setColor("ud", d.ud, c3);
-    document.getElementById("s3").textContent = word(c3);
+document.getElementById("ema_delta").textContent="→ trend";
 
-    // ATR
-    let atr = 4.71;
-    let c4 = level(atr,"atr");
-    setColor("atr", atr, c4);
-    document.getElementById("s4").textContent = word(c4);
+
+// NDFD
+let ncls = d.ndfd >=70 ? "good" : d.ndfd >=50 ? "mid" : "bad";
+setVal("ndfd", d.ndfd, ncls);
+document.getElementById("s1").textContent=statusWord(ncls);
+setDelta("ndfd_delta", d.ndfd, d.ndfd_prev);
+
+
+// NET
+let netcls = d.net >10 ? "good" : d.net >=0 ? "mid" : "bad";
+setVal("net", d.net, netcls);
+document.getElementById("s2").textContent=statusWord(netcls);
+setDelta("net_delta", d.net, d.net_prev,0);
+
+
+// UD
+let udcls = d.ud >1.2 ? "good" : d.ud >=0.9 ? "mid" : "bad";
+setVal("ud", d.ud, udcls);
+document.getElementById("s3").textContent=statusWord(udcls);
+setDelta("ud_delta", d.ud, d.ud_prev);
+
+
+// ATR
+let atr = d.atr || 4.71;
+let atrcls = atr <3 ? "good" : atr <4.5 ? "mid" : "bad";
+setVal("atr", atr, atrcls);
+document.getElementById("s4").textContent=statusWord(atrcls);
+setDelta("atr_delta", atr, d.atr_prev);
 
 });
 </script>
 
 </body>
 </html>
-```
