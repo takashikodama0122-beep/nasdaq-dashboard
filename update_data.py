@@ -2,37 +2,6 @@ import json
 import pandas as pd
 import os
 
-url = "https://stooq.com/q/d/l/?s=qqq.us&i=d"
-
-df = pd.read_csv(url)
-df["Close"] = pd.to_numeric(df["Close"], errors="coerce")
-df = df.dropna()
-
-close = df["Close"]
-
-last_price = close.iloc[-1]
-
-ema9 = close.ewm(span=9, adjust=False).mean().iloc[-1]
-ema21 = close.ewm(span=21, adjust=False).mean().iloc[-1]
-
-# EMA STACK
-if last_price > ema9 and ema9 > ema21:
-    stack = "Bullish ✅"
-elif last_price < ema9 and ema9 < ema21:
-    stack = "Bearish ❌"
-else:
-    stack = "Mixed ⚠️"
-
-# ATR proxy
-tr = close.diff().abs()
-atr = tr.rolling(14).mean().iloc[-1]
-
-# 50SMA
-sma50 = close.rolling(50).mean().iloc[-1]
-
-atr_multiple = round((last_price - sma50) / atr, 2)
-
-# Load previous data if exists
 prev = {}
 
 if os.path.exists("breadth.json"):
@@ -40,7 +9,37 @@ if os.path.exists("breadth.json"):
         with open("breadth.json","r") as f:
             prev = json.load(f)
     except:
-        prev = {}
+        pass
+
+try:
+    url = "https://stooq.com/q/d/l/?s=qqq.us&i=d"
+    df = pd.read_csv(url)
+
+    df["Close"] = pd.to_numeric(df["Close"], errors="coerce")
+    df = df.dropna()
+
+    close = df["Close"]
+
+    last_price = close.iloc[-1]
+    ema9 = close.ewm(span=9, adjust=False).mean().iloc[-1]
+    ema21 = close.ewm(span=21, adjust=False).mean().iloc[-1]
+
+    if last_price > ema9 and ema9 > ema21:
+        stack = "Bullish ✅"
+    elif last_price < ema9 and ema9 < ema21:
+        stack = "Bearish ❌"
+    else:
+        stack = "Mixed ⚠️"
+
+    tr = close.diff().abs()
+    atr = tr.rolling(14).mean().iloc[-1]
+    sma50 = close.rolling(50).mean().iloc[-1]
+
+    atr_multiple = round((last_price - sma50) / atr, 2)
+
+except:
+    stack = prev.get("ema_stack","Mixed ⚠️")
+    atr_multiple = prev.get("atr",4.71)
 
 data = {
     "ema_stack": stack,
