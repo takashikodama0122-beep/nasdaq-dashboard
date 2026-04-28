@@ -3,219 +3,94 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Nasdaq Live Dashboard</title>
-
+<title>Nasdaq Dashboard Stable</title>
 <style>
-body{
-    margin:0;
-    padding:24px;
-    background:#0b1020;
-    color:#e5e7eb;
-    font-family:Arial, Helvetica, sans-serif;
-}
-.wrap{
-    max-width:1450px;
-    margin:auto;
-}
-.top{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    gap:20px;
-    flex-wrap:wrap;
-}
-.title{
-    font-size:32px;
-    font-weight:700;
-}
-.sub{
-    color:#94a3b8;
-    font-size:14px;
-}
-.grid{
-    display:grid;
-    grid-template-columns:repeat(5,1fr);
-    gap:10px;
-    margin-top:22px;
-}
-.card{
-    background:#111827;
-    border:1px solid #243041;
-    border-radius:8px;
-    padding:14px 16px;
-    min-height:118px;
-    display:flex;
-    flex-direction:column;
-    justify-content:space-between;
-}
-.label{
-    font-size:12px;
-    color:#7c8aa0;
-    text-transform:uppercase;
-    letter-spacing:.7px;
-    font-weight:600;
-}
-.val{
-    font-size:28px;
-    font-weight:700;
-}
-.delta{
-    font-size:13px;
-    margin-top:6px;
-}
-.good{color:#22c55e;}
-.mid{color:#f59e0b;}
-.bad{color:#ef4444;}
-.flat{color:#94a3b8;}
-.footer{
-    margin-top:20px;
-    color:#94a3b8;
-    font-size:12px;
-}
+body{margin:0;padding:24px;background:#0b1020;color:#e5e7eb;font-family:Arial}
+.wrap{max-width:1450px;margin:auto}
+.top{display:flex;justify-content:space-between;flex-wrap:wrap;gap:20px}
+.title{font-size:32px;font-weight:700}
+.sub{color:#94a3b8;font-size:14px}
+.grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:22px}
+.card{background:#111827;border:1px solid #243041;border-radius:8px;padding:14px 16px;min-height:110px}
+.label{font-size:12px;color:#7c8aa0;text-transform:uppercase;font-weight:600}
+.val{font-size:28px;font-weight:700;margin-top:10px}
+.delta{font-size:13px;margin-top:6px;color:#94a3b8}
+.good{color:#22c55e}.mid{color:#f59e0b}.bad{color:#ef4444}
 </style>
 </head>
-
 <body>
 <div class="wrap">
 
 <div class="top">
 <div>
-<div class="title">Nasdaq Live Dashboard</div>
-<div class="sub">Live data on page load (no GitHub Actions needed)</div>
+<div class="title">Nasdaq Dashboard Stable</div>
+<div class="sub">Reliable GitHub JSON version</div>
 </div>
-<div class="sub">Updated: <span id="ts">Loading...</span></div>
+<div class="sub">Updated: <span id="ts">-</span></div>
 </div>
 
 <div class="grid">
 
 <div class="card">
-<div class="label">EMA STACK</div>
-<div id="ema" class="val">...</div>
-<div class="delta flat">QQQ vs 9EMA vs 21EMA</div>
+<div class="label">EMA Stack</div>
+<div id="ema" class="val">-</div>
 </div>
 
 <div class="card">
-<div class="label">QQQ PRICE</div>
-<div id="price" class="val">...</div>
-<div id="chg" class="delta flat">...</div>
+<div class="label">NDFD</div>
+<div id="ndfd" class="val">-</div>
+<div id="ndfd_d" class="delta">-</div>
 </div>
 
 <div class="card">
-<div class="label">9 EMA</div>
-<div id="ema9" class="val">...</div>
-<div class="delta flat">short trend</div>
+<div class="label">Net 52W H/L</div>
+<div id="net" class="val">-</div>
+<div id="net_d" class="delta">-</div>
 </div>
 
 <div class="card">
-<div class="label">21 EMA</div>
-<div id="ema21" class="val">...</div>
-<div class="delta flat">swing trend</div>
+<div class="label">Up/Down Vol</div>
+<div id="ud" class="val">-</div>
+<div id="ud_d" class="delta">-</div>
 </div>
 
 <div class="card">
 <div class="label">ATR x50SMA</div>
-<div id="atr" class="val">...</div>
-<div class="delta flat">extension</div>
+<div id="atr" class="val">-</div>
+<div id="atr_d" class="delta">-</div>
 </div>
 
 </div>
-
-<div class="footer">
-Live source: Stooq daily QQQ data
-</div>
-
 </div>
 
 <script>
-function cls(el, c){
-  document.getElementById(el).className = "val " + c;
+function delta(curr,prev,d=2){
+ let x=(curr-prev).toFixed(d);
+ if(curr>prev) return "▲ +" + x;
+ if(curr<prev) return "▼ " + x;
+ return "→ 0.00";
 }
 
-function avg(arr){
-  return arr.reduce((a,b)=>a+b,0)/arr.length;
-}
+fetch("breadth.json?" + Date.now())
+.then(r=>r.json())
+.then(d=>{
 
-function ema(values, period){
-  const k = 2 / (period + 1);
-  let result = values[0];
-  for(let i=1;i<values.length;i++){
-    result = values[i] * k + result * (1-k);
-  }
-  return result;
-}
+document.getElementById("ts").textContent=d.timestamp;
 
-async function loadData(){
+document.getElementById("ema").textContent=d.ema_stack;
+document.getElementById("ndfd").textContent=d.ndfd;
+document.getElementById("ndfd_d").textContent=delta(d.ndfd,d.ndfd_prev);
 
-  const url = "https://stooq.com/q/d/l/?s=qqq.us&i=d";
+document.getElementById("net").textContent=d.net;
+document.getElementById("net_d").textContent=delta(d.net,d.net_prev,0);
 
-  const res = await fetch(url);
-  const txt = await res.text();
+document.getElementById("ud").textContent=d.ud;
+document.getElementById("ud_d").textContent=delta(d.ud,d.ud_prev);
 
-  const rows = txt.trim().split("\n").slice(1);
+document.getElementById("atr").textContent=d.atr;
+document.getElementById("atr_d").textContent=delta(d.atr,d.atr_prev);
 
-  const closes = rows.map(r => parseFloat(r.split(",")[4])).filter(x => !isNaN(x));
-
-  const last = closes[closes.length-1];
-  const prev = closes[closes.length-2];
-
-  const ema9 = ema(closes.slice(-80),9);
-  const ema21 = ema(closes.slice(-120),21);
-
-  const sma50 = avg(closes.slice(-50));
-
-  let tr = [];
-  for(let i=1;i<closes.length;i++){
-    tr.push(Math.abs(closes[i]-closes[i-1]));
-  }
-
-  const atr14 = avg(tr.slice(-14));
-
-  const atrMult = ((last - sma50)/atr14).toFixed(2);
-
-  // EMA Stack
-  let stack="Mixed ⚠️";
-  let c="mid";
-
-  if(last > ema9 && ema9 > ema21){
-    stack="Bullish ✅";
-    c="good";
-  }else if(last < ema9 && ema9 < ema21){
-    stack="Bearish ❌";
-    c="bad";
-  }
-
-  document.getElementById("ema").textContent = stack;
-  cls("ema", c);
-
-  document.getElementById("price").textContent = last.toFixed(2);
-  cls("price","good");
-
-  let diff = last-prev;
-  let pct = diff/prev*100;
-
-  document.getElementById("chg").textContent =
-    (diff>=0?"▲ ":"▼ ") +
-    diff.toFixed(2) +
-    " (" + pct.toFixed(2) + "%)";
-
-  document.getElementById("chg").className =
-    "delta " + (diff>=0?"good":"bad");
-
-  document.getElementById("ema9").textContent = ema9.toFixed(2);
-  cls("ema9","mid");
-
-  document.getElementById("ema21").textContent = ema21.toFixed(2);
-  cls("ema21","mid");
-
-  document.getElementById("atr").textContent = atrMult;
-  cls("atr", atrMult < 3 ? "good" : atrMult < 4.5 ? "mid" : "bad");
-
-  document.getElementById("ts").textContent =
-    new Date().toLocaleString();
-}
-
-loadData();
+});
 </script>
-
 </body>
 </html>
