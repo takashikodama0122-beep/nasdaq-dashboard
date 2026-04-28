@@ -1,6 +1,7 @@
 import json
-import pandas as pd
 import os
+import pandas as pd
+import yfinance as yf
 from datetime import datetime, timezone
 
 prev = {}
@@ -12,20 +13,15 @@ if os.path.exists("breadth.json"):
     except:
         pass
 
-# Defaults
 stack = prev.get("ema_stack","Mixed ⚠️")
 atr_multiple = prev.get("atr",4.71)
 
 try:
-    url = "https://stooq.com/q/d/l/?s=qqq.us&i=d"
-    df = pd.read_csv(url)
+    df = yf.download("QQQ", period="6mo", interval="1d", progress=False)
 
-    df["Close"] = pd.to_numeric(df["Close"], errors="coerce")
-    df = df.dropna()
+    close = df["Close"].dropna()
 
-    close = df["Close"]
-
-    last = close.iloc[-1]
+    last = float(close.iloc[-1])
 
     ema9 = close.ewm(span=9, adjust=False).mean().iloc[-1]
     ema21 = close.ewm(span=21, adjust=False).mean().iloc[-1]
@@ -41,7 +37,7 @@ try:
     atr = tr.rolling(14).mean().iloc[-1]
     sma50 = close.rolling(50).mean().iloc[-1]
 
-    atr_multiple = round((last - sma50) / atr,2)
+    atr_multiple = round((last - sma50) / atr, 2)
 
 except:
     pass
