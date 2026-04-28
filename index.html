@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Nasdaq Dashboard Pro</title>
+<title>Nasdaq Live Dashboard</title>
 
 <style>
 body{
@@ -21,8 +21,8 @@ body{
     display:flex;
     justify-content:space-between;
     align-items:center;
-    flex-wrap:wrap;
     gap:20px;
+    flex-wrap:wrap;
 }
 .title{
     font-size:32px;
@@ -32,14 +32,12 @@ body{
     color:#94a3b8;
     font-size:14px;
 }
-
 .grid{
     display:grid;
     grid-template-columns:repeat(5,1fr);
     gap:10px;
     margin-top:22px;
 }
-
 .card{
     background:#111827;
     border:1px solid #243041;
@@ -50,7 +48,6 @@ body{
     flex-direction:column;
     justify-content:space-between;
 }
-
 .label{
     font-size:12px;
     color:#7c8aa0;
@@ -58,45 +55,20 @@ body{
     letter-spacing:.7px;
     font-weight:600;
 }
-
 .val{
     font-size:28px;
     font-weight:700;
-    line-height:1.1;
 }
-
 .delta{
     font-size:13px;
     margin-top:6px;
 }
-
 .good{color:#22c55e;}
 .mid{color:#f59e0b;}
 .bad{color:#ef4444;}
 .flat{color:#94a3b8;}
-
-.tablebox{
-    margin-top:26px;
-    background:#111827;
-    border-radius:12px;
-    overflow:hidden;
-    border:1px solid #243041;
-}
-table{
-    width:100%;
-    border-collapse:collapse;
-}
-th,td{
-    padding:14px;
-    border-bottom:1px solid #243041;
-    text-align:left;
-}
-th{
-    background:#0f172a;
-    color:#94a3b8;
-}
 .footer{
-    margin-top:18px;
+    margin-top:20px;
     color:#94a3b8;
     font-size:12px;
 }
@@ -108,168 +80,141 @@ th{
 
 <div class="top">
 <div>
-<div class="title">Nasdaq Dashboard Pro</div>
-<div class="sub">Daily Breadth / Trend / Risk Monitor</div>
+<div class="title">Nasdaq Live Dashboard</div>
+<div class="sub">Live data on page load (no GitHub Actions needed)</div>
+</div>
+<div class="sub">Updated: <span id="ts">Loading...</span></div>
 </div>
 
-<div class="sub">
-Last Update: <span id="ts">-</span>
-</div>
-</div>
-
-<!-- TOP TILES -->
 <div class="grid">
 
 <div class="card">
 <div class="label">EMA STACK</div>
-<div id="ema" class="val">-</div>
-<div id="ema_delta" class="delta flat">→</div>
+<div id="ema" class="val">...</div>
+<div class="delta flat">QQQ vs 9EMA vs 21EMA</div>
 </div>
 
 <div class="card">
-<div class="label">NDFD</div>
-<div id="ndfd" class="val">-</div>
-<div id="ndfd_delta" class="delta flat">-</div>
+<div class="label">QQQ PRICE</div>
+<div id="price" class="val">...</div>
+<div id="chg" class="delta flat">...</div>
 </div>
 
 <div class="card">
-<div class="label">NET 52W H/L</div>
-<div id="net" class="val">-</div>
-<div id="net_delta" class="delta flat">-</div>
+<div class="label">9 EMA</div>
+<div id="ema9" class="val">...</div>
+<div class="delta flat">short trend</div>
 </div>
 
 <div class="card">
-<div class="label">UP/DOWN VOL</div>
-<div id="ud" class="val">-</div>
-<div id="ud_delta" class="delta flat">-</div>
+<div class="label">21 EMA</div>
+<div id="ema21" class="val">...</div>
+<div class="delta flat">swing trend</div>
 </div>
 
 <div class="card">
-<div class="label">QQQ ATR x50SMA</div>
-<div id="atr" class="val">-</div>
-<div id="atr_delta" class="delta flat">-</div>
+<div class="label">ATR x50SMA</div>
+<div id="atr" class="val">...</div>
+<div class="delta flat">extension</div>
 </div>
 
-</div>
-
-<!-- TABLE -->
-<div class="tablebox">
-<table>
-<thead>
-<tr>
-<th>Metric</th>
-<th>Status</th>
-<th>Meaning</th>
-</tr>
-</thead>
-
-<tbody>
-<tr><td>EMA Stack</td><td id="s0">-</td><td>QQQ vs 9EMA vs 21EMA</td></tr>
-<tr><td>NDFD</td><td id="s1">-</td><td>Nasdaq-100 above 5DMA</td></tr>
-<tr><td>Net High-Low</td><td id="s2">-</td><td>New highs minus lows</td></tr>
-<tr><td>Up/Down Volume</td><td id="s3">-</td><td>Advancing vs declining volume</td></tr>
-<tr><td>ATR Multiple</td><td id="s4">-</td><td>QQQ extension from 50SMA</td></tr>
-</tbody>
-</table>
 </div>
 
 <div class="footer">
-Hosted on GitHub Pages
+Live source: Stooq daily QQQ data
 </div>
 
 </div>
 
 <script>
-
-function deltaText(curr, prev, digits=2){
-    if(prev === undefined || prev === null) return ["→","flat"];
-
-    let diff = curr - prev;
-
-    if(diff > 0){
-        return ["▲ +" + diff.toFixed(digits), "good"];
-    }
-    if(diff < 0){
-        return ["▼ " + diff.toFixed(digits), "bad"];
-    }
-    return ["→ 0.00", "flat"];
+function cls(el, c){
+  document.getElementById(el).className = "val " + c;
 }
 
-function setDelta(id,curr,prev,d=2){
-    let out = deltaText(curr,prev,d);
-    let el = document.getElementById(id);
-    el.textContent = out[0];
-    el.className = "delta " + out[1];
+function avg(arr){
+  return arr.reduce((a,b)=>a+b,0)/arr.length;
 }
 
-function setVal(id,val,cls){
-    let el = document.getElementById(id);
-    el.textContent = val;
-    el.className = "val " + cls;
+function ema(values, period){
+  const k = 2 / (period + 1);
+  let result = values[0];
+  for(let i=1;i<values.length;i++){
+    result = values[i] * k + result * (1-k);
+  }
+  return result;
 }
 
-function statusWord(cls){
-    if(cls==="good") return "Bullish";
-    if(cls==="mid") return "Neutral";
-    return "Risk";
+async function loadData(){
+
+  const url = "https://stooq.com/q/d/l/?s=qqq.us&i=d";
+
+  const res = await fetch(url);
+  const txt = await res.text();
+
+  const rows = txt.trim().split("\n").slice(1);
+
+  const closes = rows.map(r => parseFloat(r.split(",")[4])).filter(x => !isNaN(x));
+
+  const last = closes[closes.length-1];
+  const prev = closes[closes.length-2];
+
+  const ema9 = ema(closes.slice(-80),9);
+  const ema21 = ema(closes.slice(-120),21);
+
+  const sma50 = avg(closes.slice(-50));
+
+  let tr = [];
+  for(let i=1;i<closes.length;i++){
+    tr.push(Math.abs(closes[i]-closes[i-1]));
+  }
+
+  const atr14 = avg(tr.slice(-14));
+
+  const atrMult = ((last - sma50)/atr14).toFixed(2);
+
+  // EMA Stack
+  let stack="Mixed ⚠️";
+  let c="mid";
+
+  if(last > ema9 && ema9 > ema21){
+    stack="Bullish ✅";
+    c="good";
+  }else if(last < ema9 && ema9 < ema21){
+    stack="Bearish ❌";
+    c="bad";
+  }
+
+  document.getElementById("ema").textContent = stack;
+  cls("ema", c);
+
+  document.getElementById("price").textContent = last.toFixed(2);
+  cls("price","good");
+
+  let diff = last-prev;
+  let pct = diff/prev*100;
+
+  document.getElementById("chg").textContent =
+    (diff>=0?"▲ ":"▼ ") +
+    diff.toFixed(2) +
+    " (" + pct.toFixed(2) + "%)";
+
+  document.getElementById("chg").className =
+    "delta " + (diff>=0?"good":"bad");
+
+  document.getElementById("ema9").textContent = ema9.toFixed(2);
+  cls("ema9","mid");
+
+  document.getElementById("ema21").textContent = ema21.toFixed(2);
+  cls("ema21","mid");
+
+  document.getElementById("atr").textContent = atrMult;
+  cls("atr", atrMult < 3 ? "good" : atrMult < 4.5 ? "mid" : "bad");
+
+  document.getElementById("ts").textContent =
+    new Date().toLocaleString();
 }
 
-fetch("breadth.json?" + Date.now())
-.then(r=>r.json())
-.then(d=>{
-
-document.getElementById("ts").textContent =
-new Date().toLocaleString();
-
-
-// EMA
-document.getElementById("ema").textContent = d.ema_stack || "Mixed";
-
-if((d.ema_stack || "").includes("Bullish")){
-    document.getElementById("ema").className="val good";
-    document.getElementById("s0").textContent="Bullish";
-}
-else if((d.ema_stack || "").includes("Bearish")){
-    document.getElementById("ema").className="val bad";
-    document.getElementById("s0").textContent="Risk";
-}
-else{
-    document.getElementById("ema").className="val mid";
-    document.getElementById("s0").textContent="Neutral";
-}
-
-document.getElementById("ema_delta").textContent="→ trend";
-
-
-// NDFD
-let ncls = d.ndfd >=70 ? "good" : d.ndfd >=50 ? "mid" : "bad";
-setVal("ndfd", d.ndfd, ncls);
-document.getElementById("s1").textContent=statusWord(ncls);
-setDelta("ndfd_delta", d.ndfd, d.ndfd_prev);
-
-
-// NET
-let netcls = d.net >10 ? "good" : d.net >=0 ? "mid" : "bad";
-setVal("net", d.net, netcls);
-document.getElementById("s2").textContent=statusWord(netcls);
-setDelta("net_delta", d.net, d.net_prev,0);
-
-
-// UD
-let udcls = d.ud >1.2 ? "good" : d.ud >=0.9 ? "mid" : "bad";
-setVal("ud", d.ud, udcls);
-document.getElementById("s3").textContent=statusWord(udcls);
-setDelta("ud_delta", d.ud, d.ud_prev);
-
-
-// ATR
-let atr = d.atr || 4.71;
-let atrcls = atr <3 ? "good" : atr <4.5 ? "mid" : "bad";
-setVal("atr", atr, atrcls);
-document.getElementById("s4").textContent=statusWord(atrcls);
-setDelta("atr_delta", atr, d.atr_prev);
-
-});
+loadData();
 </script>
 
 </body>
